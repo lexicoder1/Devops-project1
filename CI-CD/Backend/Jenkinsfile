@@ -1,14 +1,18 @@
 pipeline {
+
+     environment {
+        REGISTRY = 'lexikhoder'   // Docker registry (e.g., Docker Hub or private registry)
+        IMAGE_NAME = 'backend'     // Name of your Docker image
+        
+    }
+
     agent {
         docker {
             image 'lexikhoder/node-agent:1'
             args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
         }
     }
-    environment {
-        REGISTRY = 'lexikhoder'   // Docker registry (e.g., Docker Hub or private registry)
-        IMAGE_NAME = 'backend'     // Name of your Docker image
-    }
+   
     
     stages {
         stage('Checkout') {
