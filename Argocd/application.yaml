@@ -1,0 +1,41 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argocd-project
+  namespace: argocd
+spec:
+# project:default means no restriction on deployment
+  project: default
+  source:
+    repoURL: https://github.com/lexicoder1/Devops-project1.git
+    targetRevision: HEAD
+    path: /
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: dev
+  
+  SyncPolicy:
+    syncOptions:
+    - CreateNamespace=true
+
+    automated:
+      selfHeal: true
+      prune: true
+
+# installation
+# kubectl create namespace argocd
+# kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+# kubectl get svc -n argocd
+# check for clusterip argo-server then port foward to get access to argocd ui
+# kubectl port-forward svc/argocd-server -n argocd 3000:80
+#  go to argocd ui "localhost:80" username "admin"
+
+#  to get initial pass word 
+# kubectl get secrets -n argocd
+# check for secret   "argocd-initial-admin-secret"
+# kubectl get secrets argocd-initial-admin-secret -n argocd -o yaml
+# check for pass word  its base 64 encoded  decode with this "echo "LUNuNEFCUlNZbTZSTVpDQQ==" | base64 --decode"
+
+# for test purpose  when you access localhost:3000 it gives an warning "Warning: Potential Security Risk Ahead" click advanced  and then continue then click continue
+

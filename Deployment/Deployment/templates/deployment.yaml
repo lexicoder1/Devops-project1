@@ -1,0 +1,65 @@
+# sample deployment yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deploy
+  labels:
+    env: prod
+    type: frontend
+spec:
+  replicas: 30
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      name: lexi2-pod
+      labels:
+        app: myapp   
+    spec:
+      containers:
+      - name: nginx1-container
+        image: nginx
+        ports:
+        - containerPort: 3002 #this is the pod port that the container listens to
+        resources:
+          requests:
+            cpu: "200m"
+            memory: "128Mi"
+          limits:
+            cpu: "500m"
+            memory: "256Mi"
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deploy
+  labels:
+    env: prod
+    type: frontend
+spec:
+  replicas: 30
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      name: lexi2-pod
+      labels:
+        app: myapp   
+    spec:
+      containers:
+      - name: nginx1-container
+        image: nginx
+        ports:
+        - containerPort: 3002 #this is the pod port that the container listens to
+        resources:
+          requests:
+            cpu: "200m"
+            memory: "128Mi"
+          limits:
+            cpu: "500m"
+            memory: "256Mi"
+
