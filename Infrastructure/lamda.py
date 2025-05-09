@@ -38,8 +38,8 @@ def upload_to_s3(file_path, bucket_name, s3_key):
         # Explicitly pass AWS credentials
         s3 = boto3.client(
             's3',
-            aws_access_key_id='AKIA5MSUBMRRY7XMBJE3',
-            aws_secret_access_key='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',
+            aws_access_key_id='',
+            aws_secret_access_key='',
             region_name='us-west-2'
         )
 
