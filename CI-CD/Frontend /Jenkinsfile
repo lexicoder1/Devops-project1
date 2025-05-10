@@ -1,15 +1,17 @@
 pipeline {
-    agent {
+    
+    environment {
+        REGISTRY = 'lexikhoder'   // Docker registry (e.g., Docker Hub or private registry)
+        IMAGE_NAME = 'frontend'     // Name of your Docker image
+        } 
+        
+    agent { 
         docker {
             image 'lexikhoder/node-agent:1'
             args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
         }
     }
-    environment {
-        REGISTRY = 'lexikhoder'   // Docker registry (e.g., Docker Hub or private registry)
-        IMAGE_NAME = 'frontend'     // Name of your Docker image
-    }
-    
+
     stages {
         stage('Checkout') {
             steps {
@@ -20,17 +22,26 @@ pipeline {
 
         stage('Testing') {
             steps {
-                sh "cd App/back-end"
+                dir('App/front-end') {
                 // testing code
                 sh "echo testing "
+                }
             }
         }
         
         stage('Build Docker Image') {
             steps {
-            
-                    sh "cd App/front-end"
-                    sh "docker build -t ${REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER} ."
+                  
+                   
+                    sh '''
+                    cd Deployment/Deployment/
+                    PREV_TAG_NUMBER=$(cat previous-tag.txt)
+                    NEW_TAG_NUMBER=$((PREV_TAG_NUMBER + 1)) 
+                    cd ../../App/front-end 
+                    ls -la
+                    docker build -t ${REGISTRY}/${IMAGE_NAME}:${NEW_TAG_NUMBER} .
+                    '''
+                    
                 
             }
         }
@@ -40,8 +51,13 @@ pipeline {
                 script{
                     // Log in to Docker
                 withDockerRegistry(credentialsId: 'docker-pass') {
-                        
-                    sh "docker push ${REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}"
+                    sh '''
+                    cd Deployment/Deployment/
+                    PREV_TAG_NUMBER=$(cat previous-tag.txt)
+                    NEW_TAG_NUMBER=$((PREV_TAG_NUMBER + 1))
+                    cd ../../App/front-end  
+                    docker push ${REGISTRY}/${IMAGE_NAME}:${NEW_TAG_NUMBER}
+                    '''
                 }
                 }
                     
@@ -60,20 +76,22 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'git-token', variable: 'GITHUB_TOKEN')]) {
                     sh '''
-                        PREV_BUILD_NUMBER=$((BUILD_NUMBER - 1))
+                        cd Deployment/Deployment/
+                        PREV_TAG_NUMBER=$(cat previous-tag.txt)
+                        NEW_TAG_NUMBER=$((PREV_TAG_NUMBER + 1))
                         git config --global user.email "uzorifeanyi1000@gmail.com"
                         git config --global user.name "uzor ifeanyi"
                         git config --global --add safe.directory $WORKSPACE
-                        cd Deployment/Deployment/
                         cat values.yaml
-                        sed -i "s/lexikhoder\\/${IMAGE_NAME}:${PREV_BUILD_NUMBER}/lexikhoder\\/${IMAGE_NAME}:${BUILD_NUMBER}/g" values.yaml
+                        sed -i "s/lexikhoder\\/${IMAGE_NAME}:${PREV_TAG_NUMBER}/lexikhoder\\/${IMAGE_NAME}:${NEW_TAG_NUMBER}/g" values.yaml
+                        sed -i "s/${PREV_TAG_NUMBER}/${NEW_TAG_NUMBER}/g" previous-tag.txt
                         cd ..
-                        git pull 
+                        git pull origin master
+                        git branch --set-upstream-to=origin/master master
                         git add .
-                        git commit -m "updated ${BUILD_NUMBER}" 
-                        git push
-                       
-                        
+                        git commit -m "updated ${NEW_TAG_NUMBER}" 
+                        git push https://${GIT_USER_NAME}:${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git
+
                     '''
                 }   
             }
@@ -87,7 +105,7 @@ pipeline {
                 
                
                 // Delete the Docker image after the build
-                sh "docker rmi -f lexikhoder/nodedocker:1 || true"
+                sh "docker rmi -f lexikhoder/node-agent:1 || true"
                 sh "docker rmi ${REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER} || true "
                 // Optionally clean up dangling images
                 sh "docker image prune -f || true"
