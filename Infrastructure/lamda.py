@@ -3,12 +3,7 @@ from datetime import datetime
 import subprocess
 from botocore.exceptions import NoCredentialsError, PartialCredentialsError
 
-# Define parameters for mysqldump
-host = "my-data-base.c3oegc26yc70.us-west-2.rds.amazonaws.com"
-port = "3306"
-user = "admin"
-password = "foobarbaz"  # Replace with the actual password
-databases = ["my_database", "my_database1", "mydb"]
+
 
 # Get the current date and time in the format yyyy-mm-dd_hh-mm-ss
 timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
