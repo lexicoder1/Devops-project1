@@ -1,2 +1,58 @@
-lexikhoder/backend:6
-lexikhoder/frontend:1
+# backend values
+backendImage: lexikhoder/backend:1
+backendDeploymentName: my-backend
+backendPodName: my-backend-pod
+backendPodLabel: myapp-backend
+backendContainerName: backend-container
+backendPodsReplicas: 3
+backendPodsMaxreplicas: 10
+backendContainerPort: 3000
+backendHorizonzalpodautoscalerName: my-backend-hpa
+backendPodCpuUtilization: 50 # its in %
+backendPodMemoryUtilization: 30 # its in %
+backendRequests:
+      cpu: "200m"
+      memory: "128Mi"
+backendLimits:
+      cpu: "500m"
+      memory: "256Mi"
+# backendend svc
+backendClusteripPort: 3001
+backendSvcName: backend-svc
+
+# frontend values
+frontendImage: lexikhoder/frontend:1
+frontendDeploymentName: my-frontend
+frontendPodName: my-frontend-pod
+frontendPodLabel: myapp-frontend
+frontendContainerName: frontend-container
+frontendPodsReplicas: 3
+frontendPodsMaxreplicas: 10
+frontendContainerPort: 3000
+frontendHorizonzalPodautoscalerName: my-frontend-hpa
+frontendPodCpuUtilization: 50 # its in %
+frontendPodMemoryUtilization: 30 # its in %
+frontendRequests:
+      cpu: "200m"
+      memory: "128Mi"
+frontendLimits:
+      cpu: "500m"
+      memory: "256Mi"
+# frontend svc
+frontendClusteripPort: 3001
+frontendSvcName: frontend-svc
+
+
+
+
+
+# ingress controller values
+# cluster vpc cidr update when using eks or any other standard cluster
+proxyRealIpCidr: 10.0.0.0/16
+# update the amazon certificate manager(acm) here
+sslCertManagerArn: arn:aws:acm:us-west-2:XXXXXXXX:certificate/XXXXXX-XXXXXXX-XXXXXXX-XXXXXXXX
+
+# ingress rules values 
+ingressRulesName: my-ingress
+
+

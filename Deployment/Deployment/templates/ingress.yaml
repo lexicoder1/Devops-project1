@@ -1,0 +1,27 @@
+# ingressClassName: nginx    check for this in  your nginx ingress controller --ingress-class=nginx to determine your  ingressClassName in your ingress rule below
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{.Values.ingressRulesName}}
+  namespace: {{.Values.environment}}
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+  - http:
+      paths:
+      - path: /frontend
+        pathType: Prefix
+        backend:
+          service:
+            name: {{.Values.backendSvcName}}
+            port:
+              number: {{.Values.frontendClusteripPort}}
+      - path: /backend
+        pathType: Prefix
+        backend:
+          service:
+            name: {{.Values.backendSvcName}}
+            port:
+              number: {{.Values.backendClusteripPort}}

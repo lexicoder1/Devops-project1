@@ -1,27 +1,28 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: my-app-hpa
+  name: {{.Values.frontendHorizonzalPodautoscalerName}} 
+  namespace: {{.Values.environment}}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: nginx-deploy
-  minReplicas: 1
-  maxReplicas: 10
+    name: {{.Values.frontendDeploymentName}}
+  minReplicas: {{.Values.frontendPodsReplicas}}
+  maxReplicas: {{.Values.frontendPodsMaxreplicas}}
   metrics:
   - type: Resource
     resource:
       name: cpu
       target:
         type: Utilization
-        averageUtilization: 50
+        averageUtilization: {{.Values.frontendPodCpuUtilization}} 
   - type: Resource
     resource:
       name: memory
       target:
         type: Utilization
-        averageUtilization: 30
+        averageUtilization: {{.Values.frontendPodMemoryUtilization}}
 
 # install metric server on the kind cluster check the metric-server.yaml file to see how
 # kubectl get hpa   ------ to the targeted pod cpu and memory utilization
@@ -32,24 +33,25 @@ spec:
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: my-app-hpa
+  name: {{.Values.backendHorizonzalpodautoscalerName}}
+  namespace: {{.Values.environment}}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: nginx-deploy
-  minReplicas: 1
-  maxReplicas: 10
+    name: {{.Values.backendDeploymentName}}
+  minReplicas: {{.Values.backendPodsReplicas}}
+  maxReplicas: {{.Values.backendPodsMaxreplicas}}
   metrics:
   - type: Resource
     resource:
       name: cpu
       target:
         type: Utilization
-        averageUtilization: 50
+        averageUtilization: {{.Values.backendPodCpuUtilization}}
   - type: Resource
     resource:
       name: memory
       target:
         type: Utilization
-        averageUtilization: 30
+        averageUtilization: {{.Values.backendPodMemoryUtilization}}

@@ -19,6 +19,7 @@ pipeline {
                 git 'https://github.com/lexicoder1/Devops-project1.git'
             }
         }
+        
 
         stage('Testing') {
             steps {
@@ -29,13 +30,14 @@ pipeline {
             }
         }
         
+        
         stage('Build Docker Image') {
             steps {
                   
                    
                     sh '''
                     cd Deployment/Deployment/
-                    PREV_TAG_NUMBER=$(cat previous-tag.txt)
+                    PREV_TAG_NUMBER=$(cat previous-tag-frontend.txt)
                     NEW_TAG_NUMBER=$((PREV_TAG_NUMBER + 1)) 
                     cd ../../App/front-end 
                     ls -la
@@ -53,7 +55,7 @@ pipeline {
                 withDockerRegistry(credentialsId: 'docker-pass') {
                     sh '''
                     cd Deployment/Deployment/
-                    PREV_TAG_NUMBER=$(cat previous-tag.txt)
+                    PREV_TAG_NUMBER=$(cat previous-tag-frontend.txt)
                     NEW_TAG_NUMBER=$((PREV_TAG_NUMBER + 1))
                     cd ../../App/front-end  
                     docker push ${REGISTRY}/${IMAGE_NAME}:${NEW_TAG_NUMBER}
@@ -77,14 +79,14 @@ pipeline {
                 withCredentials([string(credentialsId: 'git-token', variable: 'GITHUB_TOKEN')]) {
                     sh '''
                         cd Deployment/Deployment/
-                        PREV_TAG_NUMBER=$(cat previous-tag.txt)
+                        PREV_TAG_NUMBER=$(cat previous-tag-frontend.txt)
                         NEW_TAG_NUMBER=$((PREV_TAG_NUMBER + 1))
                         git config --global user.email "uzorifeanyi1000@gmail.com"
                         git config --global user.name "uzor ifeanyi"
                         git config --global --add safe.directory $WORKSPACE
                         cat values.yaml
                         sed -i "s/lexikhoder\\/${IMAGE_NAME}:${PREV_TAG_NUMBER}/lexikhoder\\/${IMAGE_NAME}:${NEW_TAG_NUMBER}/g" values.yaml
-                        sed -i "s/${PREV_TAG_NUMBER}/${NEW_TAG_NUMBER}/g" previous-tag.txt
+                        sed -i "s/${PREV_TAG_NUMBER}/${NEW_TAG_NUMBER}/g" previous-tag-frontend.txt
                         cd ..
                         git pull origin master
                         git branch --set-upstream-to=origin/master master
@@ -98,20 +100,24 @@ pipeline {
         }
     }
     
-    post {
+    // post {
         
-        always {
-            script {
+    //     always {
+    //         script {
                 
-               
-                // Delete the Docker image after the build
-                sh "docker rmi -f lexikhoder/node-agent:1 || true"
-                sh "docker rmi ${REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER} || true "
-                // Optionally clean up dangling images
-                sh "docker image prune -f || true"
-                sh "docker system prune -f || true " 
-            }
-        }
-    }
+    //             sh '''
+    //             cd Deployment/Deployment/
+    //             PREV_TAG_NUMBER=$(cat previous-tag-frontend.txt)
+    //             NEW_TAG_NUMBER=$((PREV_TAG_NUMBER + 1))
+    //             // Delete the Docker image after the build
+    //             // docker rmi -f lexikhoder/node-agent:1 || true
+    //             // docker rmi ${REGISTRY}/${IMAGE_NAME}:${NEW_TAG_NUMBER} || true 
+    //             // Optionally clean up dangling images
+    //             // docker image prune -f || true
+    //             // docker system prune -f || true 
+    //             '''
+    //         }
+    //     }
+    // }
    
 }

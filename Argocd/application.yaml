@@ -4,23 +4,25 @@ metadata:
   name: argocd-project
   namespace: argocd
 spec:
-# project:default means no restriction on deployment
   project: default
   source:
-    repoURL: https://github.com/lexicoder1/Devops-project1.git
+    repoURL: https://github.com/lexicoder1/Helm-chart.git
     targetRevision: HEAD
-    path: /
+    path: Deployment/Deployment # Update this to the path of your Helm chart within the repository
+    helm:
+      valueFiles:
+        - values.yaml # The default values file
+        - values-dev.yaml # The environment-specific values file for "dev"
   destination:
     server: https://kubernetes.default.svc
     namespace: dev
-  
-  SyncPolicy:
+  syncPolicy:
     syncOptions:
-    - CreateNamespace=true
-
+      - CreateNamespace=true
     automated:
       selfHeal: true
       prune: true
+
 
 # installation
 # kubectl create namespace argocd

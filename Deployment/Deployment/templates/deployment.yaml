@@ -2,64 +2,67 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx-deploy
+  name: {{.Values.frontendDeploymentName}} 
+  namespace: {{.Values.environment}} 
   labels:
-    env: prod
-    type: frontend
+    env: {{.Values.environment}}
+    type: {{.Values.frontendDeploymentName}}
 spec:
-  replicas: 30
+  replicas: {{.Values.frontendPodsReplicas}}
   selector:
     matchLabels:
-      app: myapp
+      app: {{.Values.frontendPodLabel}} 
   template:
     metadata:
-      name: lexi2-pod
+      name: {{.Values.frontendPodName}}
       labels:
-        app: myapp   
+        app: {{.Values.frontendPodLabel}}   
     spec:
       containers:
-      - name: nginx1-container
-        image: nginx
+      - name: {{.Values.frontendContainerName}}
+        image: {{.Values.frontendImage}}
         ports:
-        - containerPort: 3002 #this is the pod port that the container listens to
+        - containerPort: {{.Values.frontendContainerPort}} #this is the pod port that the container listens to
         resources:
           requests:
-            cpu: "200m"
-            memory: "128Mi"
+            cpu: {{.Values.frontendRequests.cpu}}
+            memory: {{.Values.frontendRequests.memory}}
           limits:
-            cpu: "500m"
-            memory: "256Mi"
+            cpu: {{.Values.frontendLimits.cpu}}
+            memory: {{.Values.frontendLimits.memory}}
 
 ---
 
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx-deploy
+  name: {{.Values.backendDeploymentName}} 
+  namespace: {{.Values.environment}}
   labels:
-    env: prod
-    type: frontend
+    env: {{.Values.environment}}
+    type: {{.Values.backendDeploymentName}} 
 spec:
-  replicas: 30
-  selector:
+   replicas: {{.Values.backendPodsReplicas}}
+   selector:
     matchLabels:
-      app: myapp
-  template:
+      app: {{.Values.backendPodLabel}} 
+   template:
     metadata:
-      name: lexi2-pod
+      name: {{.Values.backendPodName}}
       labels:
-        app: myapp   
+        app: {{.Values.backendPodLabel}}   
     spec:
       containers:
-      - name: nginx1-container
-        image: nginx
+      - name: {{.Values.backendContainerName}}
+        image: {{.Values.backendImage}}
         ports:
-        - containerPort: 3002 #this is the pod port that the container listens to
+        - containerPort: {{.Values.backendContainerPort}} #this is the pod port that the container listens to
         resources:
           requests:
-            cpu: "200m"
-            memory: "128Mi"
+            cpu: {{.Values.backendRequests.cpu}}
+            memory: {{.Values.backendRequests.memory}}
           limits:
-            cpu: "500m"
-            memory: "256Mi"
+            cpu: {{.Values.backendLimits.cpu}}
+            memory: {{.Values.backendLimits.memory}}
+   
 
