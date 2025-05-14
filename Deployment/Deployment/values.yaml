@@ -21,7 +21,7 @@ backendClusteripPort: 3001
 backendSvcName: backend-svc
 
 # frontend values
-frontendImage: lexikhoder/frontend:1
+frontendImage: lexikhoder/backend:1
 frontendDeploymentName: my-frontend
 frontendPodName: my-frontend-pod
 frontendPodLabel: myapp-frontend
